@@ -8,6 +8,7 @@
     <version>1.0.0</version>
     <name>bank-account</name>
     <description>bank-account</description>
+    <packaging>pom</packaging>
     <url/>
 
     <properties>
