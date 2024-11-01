@@ -8,11 +8,12 @@ import com.techbank.account_commom.events.AccountOpenedEvent;
 import com.techbank.account_commom.events.FundsDepositedEvent;
 import com.techbank.account_commom.events.FundsWithdrawnEvent;
 import com.techbank.cqrs_core.domain.AggregateRoot;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
 
-@NoArgsConstructor
+ @NoArgsConstructor
 public class AccountAggregate extends AggregateRoot {
     private Boolean active;
     private double balance;
@@ -33,16 +34,16 @@ public class AccountAggregate extends AggregateRoot {
         this.balance = event.getOpeningBalance();
     }
 
-    public void depositFunds(DepositFundsCommand command){
+    public void depositFunds(double amount){
         if(!this.active){
             throw new IllegalStateException("Account is not active");
         }
-        if(command.getAmount()<= 0.0){
+        if(amount <= 0.0){
             throw new IllegalStateException("Amount should be greater than 0");
         }
         raiseEvent(FundsDepositedEvent.builder()
                 .id(this.id)
-                .amount(command.getAmount())
+                .amount(amount)
                 .build());
     }
 
@@ -51,19 +52,19 @@ public class AccountAggregate extends AggregateRoot {
         this.balance += event.getAmount();
     }
 
-    public void whitdrawFunds(WithdrawFundsCommand command){
-        if(this.balance < command.getAmount()){
+    public void whitdrawFunds(double amount){
+        if(this.balance < amount){
             throw new IllegalStateException("Insufficient funds");
-        }else if(command.getAmount()<= 0.0){
+        }else if(amount<= 0.0){
             throw new IllegalStateException("Amount should be greater than 0");
         }else if(!this.active){
             throw new IllegalStateException("Account is not active");
-        }else if(this.balance - command.getAmount() < 0){
+        }else if(this.balance - amount < 0){
             throw new IllegalStateException("Insufficient funds");
         }
         raiseEvent(FundsWithdrawnEvent.builder()
                 .id(this.id)
-                .amount(-command.getAmount())
+                .amount(amount)
                 .build());
     }
 
@@ -86,6 +87,10 @@ public class AccountAggregate extends AggregateRoot {
     public void apply(AccountClosedEvent event){
         this.id = event.getId();
         this.active = false;
+    }
+
+    public double getBalance() {
+        return balance;
     }
 
 }

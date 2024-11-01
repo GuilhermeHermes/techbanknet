@@ -11,5 +11,6 @@ import java.util.Date;
 
 @Data
 @SuperBuilder
+@NoArgsConstructor
 public class AccountClosedEvent extends BaseEvent {
 }

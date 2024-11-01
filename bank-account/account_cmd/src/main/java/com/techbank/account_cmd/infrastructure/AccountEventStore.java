@@ -7,6 +7,8 @@ import com.techbank.cqrs_core.events.EventModel;
 import com.techbank.cqrs_core.exceptions.AggregateNotFoundException;
 import com.techbank.cqrs_core.exceptions.ConcurrencyException;
 import com.techbank.cqrs_core.infrastructure.EventStore;
+import com.techbank.cqrs_core.producers.EventProducer;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,6 +16,9 @@ import java.util.stream.Collectors;
 
 @Service
 public class AccountEventStore implements EventStore {
+
+    @Autowired
+    private EventProducer eventProducer;
 
     EventStoreRepository eventStoreRepository = null;
 
@@ -39,8 +44,8 @@ public class AccountEventStore implements EventStore {
                     .version(version)
                     .build();
             var persistedEvent = eventStoreRepository.save(eventModel);
-            if(persistedEvent != null){
-                //TODO
+            if(!persistedEvent.getId().isEmpty()){
+               eventProducer.producer(event.getClass().getSimpleName(), event);
             }
         }
     }
@@ -48,7 +53,8 @@ public class AccountEventStore implements EventStore {
     @Override
     public List<BaseEvent> findByAggregateId(String aggregateId) {
         var eventStream = eventStoreRepository.findByAggregateId(aggregateId);
-        if(eventStream != null && !eventStream.isEmpty()){
+        System.out.println("eventStream: " + eventStream);
+        if(eventStream == null || eventStream.isEmpty()){
         throw new AggregateNotFoundException("Incorrect id provided");
         }
         return eventStream.stream().map(x -> x.getEventData()).collect(Collectors.toList());

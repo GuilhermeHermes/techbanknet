@@ -15,8 +15,6 @@ public class AccountEventSourcingHandler implements EventSourcingHandler<Account
     @Autowired
     private EventStore eventStore;
 
-
-
     @Override
     public void save(AggregateRoot aggregate) {
         eventStore.saveEvents(aggregate.getId(), aggregate.getUncommitedChanges(), aggregate.getVersion());
