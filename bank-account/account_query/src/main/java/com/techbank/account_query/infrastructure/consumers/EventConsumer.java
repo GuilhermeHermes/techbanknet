@@ -4,12 +4,10 @@ import com.techbank.account_commom.events.AccountClosedEvent;
 import com.techbank.account_commom.events.AccountOpenedEvent;
 import com.techbank.account_commom.events.FundsDepositedEvent;
 import com.techbank.account_commom.events.FundsWithdrawnEvent;
+import com.techbank.cqrs_core.events.BaseEvent;
 import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.messaging.handler.annotation.Payload;
 
 public interface EventConsumer {
-    void consume(@Payload AccountOpenedEvent event, Acknowledgment ack);
-    void consume(@Payload FundsDepositedEvent event, Acknowledgment ack);
-    void consume(@Payload FundsWithdrawnEvent event, Acknowledgment ack);
-    void consume(@Payload AccountClosedEvent event, Acknowledgment ack);
+    void consume(@Payload BaseEvent event, Acknowledgment ack);
 }
