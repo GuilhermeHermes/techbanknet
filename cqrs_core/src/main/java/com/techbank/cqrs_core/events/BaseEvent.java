@@ -14,4 +14,5 @@ public abstract class BaseEvent extends Message {
     private int version;
 
 
+
 }

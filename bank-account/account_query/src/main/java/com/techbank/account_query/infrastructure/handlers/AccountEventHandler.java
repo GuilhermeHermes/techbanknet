@@ -10,26 +10,28 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class AccountEventHandler implements EventHandler{
+public class AccountEventHandler implements EventHandler {
     @Autowired
     private AccountRepository accountRepository;
 
     @Override
     public void on(AccountOpenedEvent event) {
+        System.out.println(event);
         var bankAccount = BankAccount.builder()
                 .id(event.getId())
                 .accountHolder(event.getAccountHolder())
-                .balance(event.getOpeningBalance())
                 .createdDate(event.getCreatedDate())
                 .accountType(event.getAccountType())
+                .balance(event.getOpeningBalance())
                 .build();
         accountRepository.save(bankAccount);
     }
 
     @Override
     public void on(FundsDepositedEvent event) {
+        System.out.println(event);
         var bankAccount = accountRepository.findById(event.getId());
-        if(bankAccount.isEmpty()){
+        if (bankAccount.isEmpty()) {
             return;
         }
         var currentBalance = bankAccount.get().getBalance();
@@ -40,12 +42,10 @@ public class AccountEventHandler implements EventHandler{
 
     @Override
     public void on(FundsWithdrawnEvent event) {
-        System.out.println("Event: " + event);
+        System.out.println(event);
         var bankAccount = accountRepository.findById(event.getId());
-
-        System.out.println("Bank Account: " + bankAccount);
-        if(bankAccount.isEmpty()){
-            throw new RuntimeException("Account not found");
+        if (bankAccount.isEmpty()) {
+            return;
         }
         var currentBalance = bankAccount.get().getBalance();
         var latestBalance = currentBalance - event.getAmount();
@@ -55,6 +55,7 @@ public class AccountEventHandler implements EventHandler{
 
     @Override
     public void on(AccountClosedEvent event) {
+        System.out.println(event);
         accountRepository.deleteById(event.getId());
     }
 }

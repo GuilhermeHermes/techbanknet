@@ -45,7 +45,7 @@ public class AccountEventStore implements EventStore {
                     .build();
             var persistedEvent = eventStoreRepository.save(eventModel);
             if(!persistedEvent.getId().isEmpty()){
-               eventProducer.producer(event.getClass().getSimpleName(), event);
+               eventProducer.produce(event.getClass().getSimpleName(), event);
             }
         }
     }
@@ -58,5 +58,15 @@ public class AccountEventStore implements EventStore {
         throw new AggregateNotFoundException("Incorrect id provided");
         }
         return eventStream.stream().map(x -> x.getEventData()).collect(Collectors.toList());
+    }
+
+
+    @Override
+    public List<String> getAggregateIds() {
+        var eventStream = eventStoreRepository.findAll();
+        if(eventStream == null || eventStream.isEmpty()){
+            throw new AggregateNotFoundException("No aggregates found");
+        }
+        return eventStream.stream().map(EventModel::getAggregateId).distinct().collect(Collectors.toList());
     }
 }

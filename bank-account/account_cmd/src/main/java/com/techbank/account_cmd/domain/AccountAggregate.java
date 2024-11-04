@@ -93,4 +93,7 @@ public class AccountAggregate extends AggregateRoot {
         return balance;
     }
 
-}
+     public Boolean getActive() {
+         return active;
+     }
+ }

@@ -5,4 +5,5 @@ public interface CommandHandler {
     void handle(DepositFundsCommand command);
     void handle(OpenAccountCommand command);
     void handle(CloseAccountCommand command);
+    void handle(RestoreReadDbCommand command);
 }

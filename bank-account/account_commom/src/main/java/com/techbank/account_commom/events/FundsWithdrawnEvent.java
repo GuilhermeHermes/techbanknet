@@ -13,3 +13,4 @@ import lombok.experimental.SuperBuilder;
 public class FundsWithdrawnEvent extends BaseEvent {
     private double amount;
 }
+
